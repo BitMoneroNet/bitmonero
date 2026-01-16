@@ -175,7 +175,7 @@ bool generate_random_blocks(cryptonote::core& core, FuzzedDataProvider& provider
 
       // Calculate and accumulate reward
       uint64_t base_reward = 0, fee = 0;
-      if (!cryptonote::get_block_reward(median_weight, block_weight, coins, base_reward, version)) {
+      if (!cryptonote::get_block_reward(height, median_weight, block_weight, coins, base_reward, version)) {
         break;
       }
 
