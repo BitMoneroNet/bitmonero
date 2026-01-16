@@ -86,6 +86,8 @@ DISABLE_VS_WARNINGS(4267)
 
 // used to overestimate the block reward when estimating a per kB to use
 #define BLOCK_REWARD_OVERESTIMATE (10 * COIN)
+// Mainnet launch time: 2026-01-16 02:00:00 UTC
+static constexpr uint64_t MAINNET_LAUNCH_TIME = 1768528800;
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
@@ -1671,6 +1673,13 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       seed_hash = get_block_id_by_height(seed_height);
     }
   }
+
+  if (m_nettype == MAINNET && height >= 1 && (uint64_t)time(NULL) < MAINNET_LAUNCH_TIME)
+  {
+    MERROR("Mainnet launch time not reached, not creating block template");
+    return false;
+  }
+
   b.timestamp = time(NULL);
 
   uint64_t median_ts;
@@ -3832,6 +3841,12 @@ bool Blockchain::check_block_timestamp(const block& b, uint64_t& median_ts) cons
   }
 
   const auto h = m_db->height();
+
+  if (m_nettype == MAINNET && h > 0 && b.timestamp < MAINNET_LAUNCH_TIME)
+  {
+    MERROR_VER("Block timestamp before mainnet launch time: " << b.timestamp);
+    return false;
+  }
 
   // if not enough blocks, no proper median yet, return true
   if(h < BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW)
