@@ -234,7 +234,8 @@ namespace config
   uint16_t const RPC_DEFAULT_PORT = 48081;
   uint16_t const ZMQ_RPC_DEFAULT_PORT = 48082;
   boost::uuids::uuid const NETWORK_ID = { {
-      0x00, 0x43, 0x8d, 0x62, 0xe0, 0xe0, 0xb2, 0xdf, 0x9f, 0x69, 0xfb, 0xc7, 0x37, 0xdd, 0x49, 0x70
+    0xfd, 0x09, 0xb5, 0xe6, 0xf8, 0x63, 0x4c, 0x7d,
+    0x91, 0xc5, 0x38, 0xb9, 0x91, 0x4c, 0x5c, 0x35
     } }; // new mainnet network id
   std::string const GENESIS_TX = "013c01ff0001ffffffffffff03029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121017767aafcde9be00dcfd098715ebcf7f410daebc582fda69d24a28e9d0bc890d1";
   uint32_t const GENESIS_NONCE = 12345;
