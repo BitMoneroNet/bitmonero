@@ -730,21 +730,27 @@ namespace nodetool
     std::set<std::string> full_addrs;
     if (m_nettype == cryptonote::TESTNET)
     {
-      full_addrs.insert("51.38.236.156:28080");
-      full_addrs.insert("57.131.20.58:28080");
+      
     }
     else if (m_nettype == cryptonote::STAGENET)
     {
-      full_addrs.insert("176.9.0.187:38080");
-      full_addrs.insert("192.99.8.110:38080");
+      
     }
   else if (m_nettype == cryptonote::FAKECHAIN)
   {
   }
   else
   {
-    full_addrs.insert("15.235.65.237:48080");
+    full_addrs.insert("51.38.236.156:48080");
+    full_addrs.insert("57.131.20.58:48080");
+    full_addrs.insert("37.187.28.176:48080");
+    full_addrs.insert("37.187.253.199:48080");
+    full_addrs.insert("51.68.155.176:48080");
+    full_addrs.insert("213.199.44.115:48080");
     full_addrs.insert("198.244.177.160:48080");
+    full_addrs.insert("15.235.65.237:48080");
+    full_addrs.insert("51.222.249.231:48080");
+    full_addrs.insert("51.222.152.245:48080");
   }
   return full_addrs;
 }
