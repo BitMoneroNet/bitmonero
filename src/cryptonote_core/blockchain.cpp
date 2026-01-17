@@ -86,8 +86,6 @@ DISABLE_VS_WARNINGS(4267)
 
 // used to overestimate the block reward when estimating a per kB to use
 #define BLOCK_REWARD_OVERESTIMATE (10 * COIN)
-// Mainnet launch time: 2026-01-16 02:00:00 UTC
-static constexpr uint64_t MAINNET_LAUNCH_TIME = 1768528800;
 
 //------------------------------------------------------------------
 Blockchain::Blockchain(tx_memory_pool& tx_pool) :
@@ -1673,13 +1671,6 @@ bool Blockchain::create_block_template(block& b, const crypto::hash *from_block,
       seed_hash = get_block_id_by_height(seed_height);
     }
   }
-
-  if (m_nettype == MAINNET && height >= 1 && (uint64_t)time(NULL) < MAINNET_LAUNCH_TIME)
-  {
-    MERROR("Mainnet launch time not reached, not creating block template");
-    return false;
-  }
-
   b.timestamp = time(NULL);
 
   uint64_t median_ts;
@@ -3842,12 +3833,6 @@ bool Blockchain::check_block_timestamp(const block& b, uint64_t& median_ts) cons
 
   const auto h = m_db->height();
 
-  if (m_nettype == MAINNET && h > 0 && b.timestamp < MAINNET_LAUNCH_TIME)
-  {
-    MERROR_VER("Block timestamp before mainnet launch time: " << b.timestamp);
-    return false;
-  }
-
   // if not enough blocks, no proper median yet, return true
   if(h < BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW)
   {
@@ -5451,10 +5436,23 @@ void Blockchain::cancel()
 
 #if defined(PER_BLOCK_CHECKPOINT)
 static const char expected_block_hashes_hash[] = "06c61040ace2d58086f1f8f0c0a78881a71c88f2814307b19f881ef92680f6e0";
+static const char monero_mainnet_genesis_tx[] = "013c01ff0001ffffffffffff03029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121017767aafcde9be00dcfd098715ebcf7f410daebc582fda69d24a28e9d0bc890d1";
+static constexpr uint32_t monero_mainnet_genesis_nonce = 10000;
+
+static bool is_monero_mainnet_genesis()
+{
+  const auto &cfg = get_config(MAINNET);
+  return cfg.GENESIS_NONCE == monero_mainnet_genesis_nonce && cfg.GENESIS_TX == monero_mainnet_genesis_tx;
+}
 void Blockchain::load_compiled_in_block_hashes(const GetCheckpointsCallback& get_checkpoints)
 {
   if (get_checkpoints == nullptr || !m_fast_sync)
   {
+    return;
+  }
+  if (m_nettype == MAINNET && !is_monero_mainnet_genesis())
+  {
+    MINFO("Skipping precomputed block hashes: custom genesis");
     return;
   }
   const epee::span<const unsigned char> &checkpoints = get_checkpoints(m_nettype);
